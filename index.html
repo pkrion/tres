@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS ligero</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>POS ligero</h1>
+    <div id="sessionStatus" class="status closed">Caja cerrada</div>
+  </header>
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2>Importar productos <small>CSV mapeable</small></h2>
+        <p class="small">Selecciona un CSV con referencia, descripción, código de barras y precio. Podrás mapear columnas antes de importar.</p>
+        <input type="file" id="csvInput" accept=".csv,text/csv">
+        <div id="mappingArea" style="display:none; margin-top:12px;">
+          <div class="input-row">
+            <select id="mapReference"></select>
+            <select id="mapDescription"></select>
+          </div>
+          <div class="input-row">
+            <select id="mapBarcode"></select>
+            <select id="mapPrice"></select>
+          </div>
+          <button id="importBtn">Importar</button>
+        </div>
+        <div class="table-wrapper" style="margin-top:12px;">
+          <table>
+            <thead><tr><th>Referencia</th><th>Descripción</th><th>Barcode</th><th>Precio</th></tr></thead>
+            <tbody id="productsPreview"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Configuración</h2>
+        <label>Nombre/alias de impresora</label>
+        <input id="printerName" placeholder="Ej. EPSON TM-T20">
+        <label>Encabezado ticket</label>
+        <textarea id="ticketHeader"></textarea>
+        <label>Pie ticket</label>
+        <textarea id="ticketFooter"></textarea>
+        <div class="input-row">
+          <div style="flex:1">
+            <label>IVA por defecto (%)</label>
+            <input id="defaultVat" type="number" step="0.1" value="21">
+          </div>
+          <div style="flex:1">
+            <label>Ruta de exportación</label>
+            <input id="exportPath" placeholder="exports">
+          </div>
+        </div>
+        <button id="saveSettings">Guardar configuración</button>
+        <p class="small">La impresora se selecciona desde el diálogo de impresión del sistema. El nombre guardado te recuerda la impresora térmica USB configurada.</p>
+      </div>
+
+      <div class="card">
+        <h2>Control de caja</h2>
+        <div class="input-row">
+          <input type="number" id="openingCash" placeholder="Efectivo inicial">
+          <button id="openSession">Abrir caja</button>
+        </div>
+        <button class="danger" id="closeSession">Cerrar caja</button>
+        <p class="small">Al cerrar podrás exportar CSV de ventas por referencia y se genera ticket de cierre con base e IVA.</p>
+      </div>
+
+      <div class="card">
+        <h2>Venta rápida</h2>
+        <div class="input-row">
+          <input id="search" placeholder="Buscar por referencia, descripción o escanear código de barras">
+          <button id="addManual">Añadir manual</button>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Ref</th><th>Descripción</th><th>Cant.</th><th>Precio</th><th>DTO%</th><th>Total</th><th></th></tr>
+            </thead>
+            <tbody id="saleLines"></tbody>
+          </table>
+        </div>
+        <div class="input-row">
+          <label style="flex:1;">IVA ticket (%)<input id="vatRate" type="number" step="0.1" value="21"></label>
+          <div style="flex:1; text-align:right;">
+            <div>Base: <span id="baseValue">0.00</span></div>
+            <div>IVA: <span id="taxValue">0.00</span></div>
+            <div>Total: <strong id="totalValue">0.00</strong></div>
+          </div>
+        </div>
+        <button id="chargeBtn">Cobrar / Imprimir</button>
+      </div>
+
+      <div class="card">
+        <h2>Historial y limpieza</h2>
+        <div class="input-row">
+          <input type="date" id="fromDate">
+          <input type="date" id="toDate">
+        </div>
+        <button class="secondary" id="clearHistory">Borrar ventas entre fechas</button>
+        <p class="small">Usa esto para purgar tickets por día o por mes y mantener el almacenamiento local bajo control.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="ticketModal">
+    <div class="modal-content">
+      <h3>Ticket listo</h3>
+      <div class="ticket-preview" id="ticketPreview"></div>
+      <div class="footer-links">
+        <button id="printTicket">Imprimir</button>
+        <button class="secondary" id="closeModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="closingModal">
+    <div class="modal-content">
+      <h3>Cierre de caja</h3>
+      <div class="ticket-preview" id="closingPreview"></div>
+      <div class="footer-links">
+        <button id="downloadCsv">Descargar CSV</button>
+        <button id="printClosing">Imprimir ticket</button>
+        <button class="secondary" id="closeClosing">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
