@@ -13,8 +13,8 @@ Aplicación de punto de venta de escritorio (HTML/JS vanilla + PHP + SQLite) lis
 - **Tickets imprimibles** usando el diálogo del sistema (selecciona tu impresora térmica USB configurada) con plantilla personalizable.
 
 ## Estructura
-- `index.html`: UI moderna en pestañas (ventas, productos, configuración, caja/historial) con modales para ticket y cierre de caja.
-- `styles.css`: estilos oscuros con la paleta del logo y componentes responsivos.
+- `index.html`: UI moderna con modales para ticket y cierre de caja.
+- `styles.css`: estilos oscuros y componentes responsivos.
 - `app.js`: lógica de UI, importación CSV, búsqueda, carrito, cálculo de IVA y acciones de caja.
 - `api.php`: API JSON para productos, tickets, sesiones, exportes, historial y ajustes.
 - `db.php`: conexión SQLite y creación de tablas.

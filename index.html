@@ -3,52 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POS Lucasur</title>
+  <title>POS ligero</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
-    <div class="brand">
-      <div class="brand-mark">L</div>
-      <div>
-        <p class="eyebrow">Ferretería Lucasur</p>
-        <h1>Point of Sale</h1>
-      </div>
-    </div>
-    <div class="session">
-      <div id="sessionStatus" class="status closed">Caja cerrada</div>
-      <div class="session-actions">
-        <input type="number" id="openingCash" placeholder="Efectivo inicial">
-        <button id="openSession">Abrir caja</button>
-        <button class="danger" id="closeSession">Cerrar caja</button>
-      </div>
-    </div>
+    <h1>POS ligero</h1>
+    <div id="sessionStatus" class="status closed">Caja cerrada</div>
   </header>
-
-  <nav class="tabs">
-    <button class="tab active" data-tab="ventas">Ventas</button>
-    <button class="tab" data-tab="productos">Productos</button>
-    <button class="tab" data-tab="configuracion">Configuración</button>
-    <button class="tab" data-tab="caja">Caja e historial</button>
-  </nav>
-
-  <main>
-    <section class="tab-panel active" data-section="ventas">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Cobro ágil</p>
-          <h2>Venta rápida</h2>
-          <p class="muted">Pensado para pistola de códigos y teclado: escribe o escanea y presiona Enter para añadir el primer resultado.</p>
-        </div>
-        <div class="pill">IVA por ticket</div>
-      </div>
+  <div class="container">
+    <div class="grid">
       <div class="card">
-        <div class="input-row responsive">
-          <label class="input-block">
-            <span>Buscar por referencia / descripción / código de barras</span>
-            <input id="search" placeholder="Ej. tornillo, 8437000000000" autocomplete="off">
-          </label>
-          <button id="addManual" class="ghost">Añadir manual</button>
+        <h2>Importar productos <small>CSV mapeable</small></h2>
+        <p class="small">Selecciona un CSV con referencia, descripción, código de barras y precio. Podrás mapear columnas antes de importar.</p>
+        <input type="file" id="csvInput" accept=".csv,text/csv">
+        <div id="mappingArea" style="display:none; margin-top:12px;">
+          <div class="input-row">
+            <select id="mapReference"></select>
+            <select id="mapDescription"></select>
+          </div>
+          <div class="input-row">
+            <select id="mapBarcode"></select>
+            <select id="mapPrice"></select>
+          </div>
+          <button id="importBtn">Importar</button>
+        </div>
+        <div class="table-wrapper" style="margin-top:12px;">
+          <table>
+            <thead><tr><th>Referencia</th><th>Descripción</th><th>Barcode</th><th>Precio</th></tr></thead>
+            <tbody id="productsPreview"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Configuración</h2>
+        <label>Nombre/alias de impresora</label>
+        <input id="printerName" placeholder="Ej. EPSON TM-T20">
+        <label>Encabezado ticket</label>
+        <textarea id="ticketHeader"></textarea>
+        <label>Pie ticket</label>
+        <textarea id="ticketFooter"></textarea>
+        <div class="input-row">
+          <div style="flex:1">
+            <label>IVA por defecto (%)</label>
+            <input id="defaultVat" type="number" step="0.1" value="21">
+          </div>
+          <div style="flex:1">
+            <label>Ruta de exportación</label>
+            <input id="exportPath" placeholder="exports">
+          </div>
+        </div>
+        <button id="saveSettings">Guardar configuración</button>
+        <p class="small">La impresora se selecciona desde el diálogo de impresión del sistema. El nombre guardado te recuerda la impresora térmica USB configurada.</p>
+      </div>
+
+      <div class="card">
+        <h2>Control de caja</h2>
+        <div class="input-row">
+          <input type="number" id="openingCash" placeholder="Efectivo inicial">
+          <button id="openSession">Abrir caja</button>
+        </div>
+        <button class="danger" id="closeSession">Cerrar caja</button>
+        <p class="small">Al cerrar podrás exportar CSV de ventas por referencia y se genera ticket de cierre con base e IVA.</p>
+      </div>
+
+      <div class="card">
+        <h2>Venta rápida</h2>
+        <div class="input-row">
+          <input id="search" placeholder="Buscar por referencia, descripción o escanear código de barras">
+          <button id="addManual">Añadir manual</button>
         </div>
         <div class="table-wrapper">
           <table>
@@ -58,112 +82,28 @@
             <tbody id="saleLines"></tbody>
           </table>
         </div>
-        <div class="totals">
-          <label class="input-block small-block">
-            <span>IVA aplicado (%)</span>
-            <input id="vatRate" type="number" step="0.1" value="21">
-          </label>
-          <div class="totals-numbers">
-            <div>Base: <span id="baseValue">0.00</span> €</div>
-            <div>IVA: <span id="taxValue">0.00</span> €</div>
-            <div>Total: <strong id="totalValue">0.00</strong> €</div>
+        <div class="input-row">
+          <label style="flex:1;">IVA ticket (%)<input id="vatRate" type="number" step="0.1" value="21"></label>
+          <div style="flex:1; text-align:right;">
+            <div>Base: <span id="baseValue">0.00</span></div>
+            <div>IVA: <span id="taxValue">0.00</span></div>
+            <div>Total: <strong id="totalValue">0.00</strong></div>
           </div>
-          <button id="chargeBtn" class="primary">Cobrar / Imprimir</button>
         </div>
+        <button id="chargeBtn">Cobrar / Imprimir</button>
       </div>
-    </section>
 
-    <section class="tab-panel" data-section="productos">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Altas masivas</p>
-          <h2>Importar productos</h2>
-          <p class="muted">Sube un CSV, asigna columnas y revisa las primeras filas antes de importar.</p>
-        </div>
-        <div class="hint">Referencia, descripción, código de barras y precio son obligatorios.</div>
-      </div>
       <div class="card">
-        <div class="upload">
-          <input type="file" id="csvInput" accept=".csv,text/csv">
-          <p class="muted">Arrastra el CSV o haz clic para elegir archivo.</p>
+        <h2>Historial y limpieza</h2>
+        <div class="input-row">
+          <input type="date" id="fromDate">
+          <input type="date" id="toDate">
         </div>
-        <div id="mappingArea" class="mapping" style="display:none;">
-          <h3>Mapea las columnas</h3>
-          <div class="input-row responsive">
-            <label class="input-block">Referencia<select id="mapReference"></select></label>
-            <label class="input-block">Descripción<select id="mapDescription"></select></label>
-          </div>
-          <div class="input-row responsive">
-            <label class="input-block">Código de barras<select id="mapBarcode"></select></label>
-            <label class="input-block">Precio venta<select id="mapPrice"></select></label>
-          </div>
-          <button id="importBtn" class="primary">Importar productos</button>
-        </div>
-        <div class="table-wrapper soft">
-          <table>
-            <thead><tr><th>Referencia</th><th>Descripción</th><th>Barcode</th><th>Precio</th></tr></thead>
-            <tbody id="productsPreview"></tbody>
-          </table>
-        </div>
+        <button class="secondary" id="clearHistory">Borrar ventas entre fechas</button>
+        <p class="small">Usa esto para purgar tickets por día o por mes y mantener el almacenamiento local bajo control.</p>
       </div>
-    </section>
-
-    <section class="tab-panel" data-section="configuracion">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Preferencias locales</p>
-          <h2>Configuración</h2>
-          <p class="muted">Plantilla de ticket editable, recordatorio de impresora térmica y rutas de exportación/limpieza.</p>
-        </div>
-        <div class="hint">Los datos se guardan en SQLite local.</div>
-      </div>
-      <div class="card settings">
-        <div class="input-row responsive">
-          <label class="input-block">Nombre/alias de impresora<input id="printerName" placeholder="Ej. EPSON TM-T20"></label>
-          <label class="input-block">Ruta de exportación<input id="exportPath" placeholder="exports"></label>
-        </div>
-        <div class="input-row responsive">
-          <label class="input-block small-block">IVA por defecto (%)<input id="defaultVat" type="number" step="0.1" value="21"></label>
-          <label class="input-block">Cabecera del ticket<textarea id="ticketHeader" placeholder="Lucasur\nAv. ..."></textarea></label>
-          <label class="input-block">Pie del ticket<textarea id="ticketFooter" placeholder="Gracias por su compra"></textarea></label>
-        </div>
-        <div class="actions">
-          <button id="saveSettings" class="primary">Guardar configuración</button>
-          <p class="muted">La impresora real se elige en el diálogo de impresión del sistema; guarda el alias para recordar la térmica USB configurada.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="tab-panel" data-section="caja">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Control y limpieza</p>
-          <h2>Cierres e historial</h2>
-          <p class="muted">Exporta ventas por referencia al cerrar caja, imprime ticket con desglose e higieniza datos por rango.</p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="row-split">
-          <div>
-            <h3>Cierre de caja</h3>
-            <p class="muted">Cuando cierres, se pedirá exportar CSV y se imprime ticket resumen.</p>
-            <button id="closeSessionPanel" class="primary ghost" disabled>Cerrar caja desde aquí</button>
-            <p class="muted small">Usa también los botones rápidos del encabezado.</p>
-          </div>
-          <div class="divider"></div>
-          <div>
-            <h3>Historial y limpieza</h3>
-            <div class="input-row responsive">
-              <label class="input-block">Desde<input type="date" id="fromDate"></label>
-              <label class="input-block">Hasta<input type="date" id="toDate"></label>
-            </div>
-            <button class="secondary" id="clearHistory">Borrar ventas entre fechas</button>
-            <p class="muted small">Ideal para purgar por día o mes y mantener la base ligera.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <div class="modal" id="ticketModal">
     <div class="modal-content">

@@ -72,7 +72,6 @@ function loadSettings() {
     document.getElementById('defaultVat').value = settings.defaultVat || 21;
     document.getElementById('exportPath').value = settings.exportPath || 'exports';
     document.getElementById('vatRate').value = settings.defaultVat || 21;
-    updateTotals();
   });
 }
 
@@ -90,15 +89,12 @@ function saveSettings() {
 function sessionStatus() {
   api('sessionStatus').then(res => {
     const status = document.getElementById('sessionStatus');
-    const closePanelBtn = document.getElementById('closeSessionPanel');
     if (res.open) {
       status.textContent = `Caja abierta (#${res.sessionId})`;
       status.classList.remove('closed');
-      if (closePanelBtn) closePanelBtn.disabled = false;
     } else {
       status.textContent = 'Caja cerrada';
       status.classList.add('closed');
-      if (closePanelBtn) closePanelBtn.disabled = true;
     }
   });
 }
@@ -257,11 +253,6 @@ function clearHistory() {
   api('clearHistory', { from, to }).then(res => alert(res.cleared ? 'Historial borrado' : 'Sin cambios'));
 }
 
-function switchTab(target) {
-  document.querySelectorAll('.tab').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === target));
-  document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.dataset.section === target));
-}
-
 function init() {
   document.getElementById('csvInput').addEventListener('change', e => {
     const file = e.target.files[0];
@@ -274,7 +265,6 @@ function init() {
   document.getElementById('saveSettings').addEventListener('click', saveSettings);
   document.getElementById('openSession').addEventListener('click', openSession);
   document.getElementById('closeSession').addEventListener('click', openCloseSession);
-  document.getElementById('closeSessionPanel').addEventListener('click', openCloseSession);
   document.getElementById('search').addEventListener('keyup', searchHandler);
   document.getElementById('addManual').addEventListener('click', () => addSaleLine());
   document.getElementById('chargeBtn').addEventListener('click', charge);
@@ -285,7 +275,6 @@ function init() {
   document.getElementById('downloadCsv').addEventListener('click', downloadCsv);
   document.getElementById('printClosing').addEventListener('click', () => printNode('closingPreview'));
   document.getElementById('clearHistory').addEventListener('click', clearHistory);
-  document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
   loadSettings();
   sessionStatus();
   fetchProducts();
